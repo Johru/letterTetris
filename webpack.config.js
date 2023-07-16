@@ -1,36 +1,35 @@
 const path = require("path");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
+const { extensions } = require("pixi.js");
 
 module.exports = {
-  mode: "development",
   entry: "./src/index.ts",
+  mode: "development",
   module: {
     rules: [
       {
-        test: /\.tsx?$/,
+        test: /\.ts$/,
         use: "ts-loader",
-        exclude: /node_modules/,
+        include: [path.resolve(__dirname, "src")],
+      },
+      {
+        test: /\.(png|jpg|gif)$/i,
+        type: "asset/resource",
+      },
+      {
+        test: /\.m?js$/,
+        enforce: "pre",
+        use: ["source-map-loader"],
       },
     ],
   },
   resolve: {
-    extensions: [".tsx", ".ts", ".js"],
+    extensions: [".ts", ".js"],
   },
   output: {
     filename: "bundle.js",
-    path: path.resolve(__dirname, "dist"),
+    path: path.resolve(__dirname, "public"),
   },
-  plugins: [
-    new HtmlWebpackPlugin({
-      title: "My Pixi.js App",
-      template: "src/index.html",
-    }),
-  ],
-  devServer: {
-    static: {
-      directory: path.join(__dirname, "dist"),
-    },
-    compress: true,
-    port: 3000,
+  resolve: {
+    extensions: [".ts", ".js"],
   },
 };
