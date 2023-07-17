@@ -1,25 +1,11 @@
-// import * as PIXI from "pixi.js";
-// import { launchPlaceholder } from "./placeholder";
-
-// let app = new PIXI.Application<HTMLCanvasElement>({ width: 640, height: 360 });
-// document.body.appendChild(app.view);
-
-// let sprite = PIXI.Sprite.from("images/sample.png");
-
-// app.stage.addChild(sprite);
-// launchPlaceholder();
-
-// let elapsed = 0.0;
-// app.ticker.add((delta) => {
-//   elapsed += delta;
-//   sprite.x = 100.0 + Math.cos(elapsed / 50.0) * 100.0;
-// });
-
 import * as PIXI from "pixi.js";
 
 class Game {
   private app: PIXI.Application<HTMLCanvasElement>;
   private letter: PIXI.Text;
+  private square: PIXI.Graphics;
+  private letterSize: number;
+  private squareSize: number;
 
   constructor() {
     this.app = new PIXI.Application<HTMLCanvasElement>({
@@ -29,34 +15,46 @@ class Game {
     });
     document.body.appendChild(this.app.view);
 
-    // Set up the letter
+    // Generate a random letter from A to Z
+    const letterChar = String.fromCharCode(65 + Math.floor(Math.random() * 26));
+
+    // Generate a random size for the square
+    this.squareSize = Math.random() * 100 + 50; // Random size between 50 and 150
+
+    // Make the letter size a random percentage of the square size, between 10% and 95%
+    this.letterSize = this.squareSize * (Math.random() * 0.85 + 0.1);
+
     const letterStyle = new PIXI.TextStyle({
-      fontSize: 36,
+      fontSize: this.letterSize,
       fill: "white",
     });
 
-    this.letter = new PIXI.Text("D", letterStyle);
-    this.letter.x = Math.random() * this.app.screen.width; // Random x position
-    this.letter.y = 0; // Start at the top of the screen
+    this.letter = new PIXI.Text(letterChar, letterStyle);
+    this.letter.anchor.set(0.5);
 
-    this.app.stage.addChild(this.letter);
+    // Create a square with a border
+    this.square = new PIXI.Graphics();
+    this.square.lineStyle(5, 0xffffff); // White border
+    this.square.drawRect(0, 0, this.squareSize, this.squareSize);
+    this.square.x = Math.random() * (this.app.screen.width - this.squareSize);
 
-    // Start the game loop
+    // Make sure the letter is centered in the square
+    this.letter.position.set(this.squareSize / 2, this.squareSize / 2);
+
+    this.square.addChild(this.letter);
+    this.app.stage.addChild(this.square);
+
     this.app.ticker.add((delta) => this.gameLoop(delta));
   }
 
   gameLoop(delta: number) {
-    // Move the letter down
-    this.letter.y += 1 * delta;
+    this.square.y += 1 * delta;
 
-    // Check if the letter is off the bottom of the screen
-    if (this.letter.y > this.app.screen.height) {
-      // Reset the letter to the top of the screen and give it a new x position
-      this.letter.y = 0;
-      this.letter.x = Math.random() * this.app.screen.width;
+    if (this.square.y > this.app.screen.height) {
+      this.square.y = 0;
+      this.square.x = Math.random() * (this.app.screen.width - this.squareSize);
     }
   }
 }
 
-// Create a new game instance
 const game = new Game();
