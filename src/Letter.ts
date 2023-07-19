@@ -1,28 +1,55 @@
-import * as PIXI from 'pixi.js';
-import { Game } from './index';
+import * as PIXI from "pixi.js";
+import { Game } from "./index";
+import { hslToHex } from "./hslToHex";
 
 export class Letter {
-  public sprite: PIXI.Text;
   public letter: string;
+  private letterSprite: PIXI.Text;
+  private square: PIXI.Graphics;
+  private letterSize: number;
+  private squareSize: number;
 
-  constructor(letter: string, game: Game) {
+  constructor(letter: string, game: Game, x: number, size: number) {
     this.letter = letter;
-    this.sprite = new PIXI.Text(letter, {
-      fontFamily: 'Arial',
-      fontSize: 24,
-      fill: 0xff1010,
-      align: 'center',
+    this.squareSize = size;
+    this.letterSize = Math.max(
+      this.squareSize * (Math.random() * 0.7 + 0.1),
+      25
+    );
+
+    this.square = new PIXI.Graphics();
+
+    const hue = Math.random();
+    const color = hslToHex(hue, 1, 0.2);
+
+    this.square.beginFill(color);
+    this.square.lineStyle(1, 0xffffff);
+    this.square.drawRect(0, 0, this.squareSize, this.squareSize);
+    this.square.x = x;
+    this.square.y = 0;
+    game.app.stage.addChild(this.square);
+
+    this.letterSprite = new PIXI.Text(letter, {
+      fontFamily: "Arial",
+      fontSize: this.letterSize,
+      fill: 0xffffff,
+      align: "center",
     });
-    this.sprite.x = Math.random() * game.app.screen.width;
-    this.sprite.y = 0;
-    game.app.stage.addChild(this.sprite);
+
+    this.letterSprite.anchor.set(0.5);
+    this.letterSprite.position.set(this.squareSize / 2, this.squareSize / 2);
+    this.square.addChild(this.letterSprite);
   }
 
   remove(app: PIXI.Application) {
-    app.stage.removeChild(this.sprite);
+    app.stage.removeChild(this.square);
   }
 
-  update(delta: number) {
-    this.sprite.y += game.speed * delta;
+  update(delta: number, speed: number) {
+    this.square.y += (speed / 120) * delta;
+  }
+
+  get bounds() {
+    return this.square.getBounds();
   }
 }

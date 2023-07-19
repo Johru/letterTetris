@@ -1,0 +1,17 @@
+body {
+  display: flex;
+}
+
+button {
+  background-color: yellow;
+  padding: 1em;
+  margin: 0 1em;
+}
+
+#pixi-container {
+  border: 0px solid green;
+}
+
+.flex {
+  display: flex;
+}
