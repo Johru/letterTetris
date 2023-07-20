@@ -6,7 +6,7 @@ export class Game {
   private letters: Letter[];
   private isGameOngoing: Boolean = true;
   private timeElapsed: number = 0;
-  private alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
+  private alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
   private initialSpeed = 20;
   public speed = this.initialSpeed;
   private speedIncrement = 5;
