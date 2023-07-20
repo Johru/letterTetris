@@ -86,51 +86,10 @@ export class Game {
       this.alphabet[Math.floor(Math.random() * this.alphabet.length)];
     let size = Math.max(Math.random() * 100 + 3, 30);
     let y = 0;
+    let x = Math.random() * (this.app.screen.width - size);
 
-    // Generate an array of all possible x positions and shuffle it
-    let positions = this.generatePositions(size);
-    this.shuffleArray(positions);
-
-    let x;
-    for (let pos of positions) {
-      if (!this.doesCollide(pos, y, size)) {
-        x = pos;
-        break;
-      }
-    }
-
-    // If a suitable position was found, create the square
-    if (x !== undefined) {
-      let letterInstance = new Letter(randomLetter, this, x, size);
-      this.letters.push(letterInstance);
-    }
-  }
-
-  // Returns an array of all possible x positions for a square of the given size
-  generatePositions(size: number): number[] {
-    let positions = [];
-    for (let x = 0; x <= this.app.screen.width - size; x += size) {
-      positions.push(x);
-    }
-    return positions;
-  }
-
-  // Shuffles an array in-place using the Fisher-Yates algorithm
-  shuffleArray(array: number[]): void {
-    for (let i = array.length - 1; i > 0; i--) {
-      let j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
-    }
-  }
-
-  doesCollide(x: number, y: number, size: number): boolean {
-    const newSquare = new PIXI.Rectangle(x, y, size, size);
-    for (let letter of this.letters) {
-      if (newSquare.intersects(letter.bounds)) {
-        return true;
-      }
-    }
-    return false;
+    let letterInstance = new Letter(randomLetter, this, x, size);
+    this.letters.push(letterInstance);
   }
 
   incrementScore() {
