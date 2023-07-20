@@ -6,7 +6,7 @@ export class Game {
   private letters: Letter[];
   private isGameOngoing: Boolean = true;
   private timeElapsed: number = 0;
-  private alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
+  private alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
   private initialSpeed = 20;
   public speed = this.initialSpeed;
   private speedIncrement = 5;
@@ -73,7 +73,7 @@ export class Game {
         letter.update(delta, this.speed, this);
       }
 
-      if (this.timeElapsed >= 600 / this.speed) {
+      if (this.timeElapsed >= 200 / this.speed) {
         this.timeElapsed = 0;
 
         this.createLetter();
