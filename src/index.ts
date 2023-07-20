@@ -7,11 +7,15 @@ export class Game {
   private isGameOngoing: Boolean = true;
   private timeElapsed: number = 0;
   private alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
-  public readonly speed = 60;
+  private initialSpeed = 10;
+  public speed = this.initialSpeed;
+  private speedIncrement = 5;
   private score = 0;
   private pauseButton = document.getElementById("pause");
-  private plusButton = document.getElementById("plus");
-  private scoreElement;
+  private scoreElement = document.getElementById("score");
+  private speedElement = document.getElementById("speed");
+  private keydownListener: (event: KeyboardEvent) => void;
+  private pauseListener: (event: MouseEvent) => void;
 
   constructor() {
     this.app = new PIXI.Application<HTMLCanvasElement>({
@@ -23,33 +27,40 @@ export class Game {
     container?.appendChild(this.app.view);
     this.letters = [];
     this.score = 0;
-    this.scoreElement = document.getElementById("score");
 
-    const keydown = window.addEventListener("keydown", (event) => {
+    this.keydownListener = (event: KeyboardEvent): void => {
       let key = event.key.toLowerCase();
       if (key === " ") {
         this.isGameOngoing = !this.isGameOngoing;
       }
-      this.letters = this.letters.filter((letterInstance) => {
-        if (letterInstance.letter === key) {
-          letterInstance.remove(this.app);
-          return false;
-        } else {
-          return true;
-        }
-      });
-    });
 
-    if (this.pauseButton)
-      this.pauseButton.addEventListener(
-        "click",
-        () => (this.isGameOngoing = !this.isGameOngoing)
+      const matchingLetters = this.letters.filter(
+        (letterInstance) => letterInstance.letter === key
       );
 
-    if (this.plusButton)
-      this.plusButton.addEventListener("click", () => this.incrementScore());
+      if (matchingLetters.length >= 2) {
+        this.letters = this.letters.filter((letterInstance) => {
+          if (letterInstance.letter === key) {
+            letterInstance.remove(this.app);
+            return false;
+          } else {
+            return true;
+          }
+        });
+        this.incrementScore();
+      } else {
+        this.decrementScore();
+      }
+    };
 
-    this.app.ticker.add((delta: number) => this.gameLoop(delta));
+    window.addEventListener("keydown", this.keydownListener);
+
+    this.pauseListener = () => (this.isGameOngoing = !this.isGameOngoing);
+
+    if (this.pauseButton)
+      this.pauseButton.addEventListener("click", this.pauseListener);
+
+    this.app.ticker.add(this.gameLoop.bind(this));
   }
 
   gameLoop(delta: number) {
@@ -57,11 +68,12 @@ export class Game {
       this.timeElapsed += delta;
 
       for (let letter of this.letters) {
-        letter.update(delta, this.speed);
+        letter.update(delta, this.speed, this);
       }
 
       if (this.timeElapsed >= 600 / this.speed) {
         this.timeElapsed = 0;
+
         this.createLetter();
       }
     }
@@ -121,13 +133,28 @@ export class Game {
 
   incrementScore() {
     this.score++;
+    this.updateSpeed();
     if (this.scoreElement)
       this.scoreElement.textContent = `Score: ${this.score}`;
   }
   decrementScore() {
     this.score -= 2;
+    if (this.score < 0) this.score = 0;
+    this.updateSpeed();
+
     if (this.scoreElement)
       this.scoreElement.textContent = `Score: ${this.score}`;
+  }
+  updateSpeed() {
+    this.speed = this.initialSpeed + this.speedIncrement * this.score;
+    if (this.speedElement)
+      this.speedElement.textContent = `Speed: ${this.speed}`;
+  }
+
+  endGame() {
+    this.isGameOngoing = false;
+    window.removeEventListener("keydown", this.keydownListener);
+    this.pauseButton?.removeEventListener("click", this.pauseListener);
   }
 }
 new Game();

@@ -15,3 +15,7 @@ button {
 .flex {
   display: flex;
 }
+.grid {
+  display: grid;
+  margin: 0 1em;
+}

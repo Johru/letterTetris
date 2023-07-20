@@ -45,8 +45,11 @@ export class Letter {
     app.stage.removeChild(this.square);
   }
 
-  update(delta: number, speed: number) {
+  update(delta: number, speed: number, game: Game) {
     this.square.y += (speed / 120) * delta;
+    if (this.square.y + this.squareSize >= game.app.screen.height) {
+      game.endGame();
+    }
   }
 
   get bounds() {
