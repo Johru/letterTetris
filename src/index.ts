@@ -49,7 +49,7 @@ export class Game {
     if (this.plusButton)
       this.plusButton.addEventListener("click", () => this.incrementScore());
 
-    this.app.ticker.add((delta) => this.gameLoop(delta));
+    this.app.ticker.add((delta: number) => this.gameLoop(delta));
   }
 
   gameLoop(delta: number) {
