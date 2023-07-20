@@ -29,7 +29,7 @@ export class Game {
     this.score = 0;
 
     this.keydownListener = (event: KeyboardEvent): void => {
-      let key = event.key.toLowerCase();
+      let key = event.key.toUpperCase();
       if (key === " ") {
         this.isGameOngoing = !this.isGameOngoing;
         return;
