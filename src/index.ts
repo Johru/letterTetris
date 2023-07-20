@@ -7,7 +7,7 @@ export class Game {
   private isGameOngoing: Boolean = true;
   private timeElapsed: number = 0;
   private alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
-  private initialSpeed = 10;
+  private initialSpeed = 20;
   public speed = this.initialSpeed;
   private speedIncrement = 5;
   private score = 0;
@@ -32,21 +32,22 @@ export class Game {
       let key = event.key.toLowerCase();
       if (key === " ") {
         this.isGameOngoing = !this.isGameOngoing;
+        return;
       }
 
-      const matchingLetters = this.letters.filter(
-        (letterInstance) => letterInstance.letter === key
-      );
+      let matchCount = 0;
 
-      if (matchingLetters.length >= 2) {
-        this.letters = this.letters.filter((letterInstance) => {
-          if (letterInstance.letter === key) {
-            letterInstance.remove(this.app);
-            return false;
-          } else {
-            return true;
-          }
-        });
+      this.letters = this.letters.reduce((remainingLetters, letterInstance) => {
+        if (letterInstance.letter === key) {
+          matchCount++;
+          letterInstance.remove(this.app);
+        } else {
+          remainingLetters.push(letterInstance);
+        }
+        return remainingLetters;
+      }, [] as Letter[]);
+
+      if (matchCount >= 2) {
         this.incrementScore();
       } else {
         this.decrementScore();
@@ -61,6 +62,7 @@ export class Game {
       this.pauseButton.addEventListener("click", this.pauseListener);
 
     this.app.ticker.add(this.gameLoop.bind(this));
+    this.updateSpeed();
   }
 
   gameLoop(delta: number) {
@@ -114,7 +116,7 @@ export class Game {
   }
 
   // Shuffles an array in-place using the Fisher-Yates algorithm
-  shuffleArray(array: any[]): void {
+  shuffleArray(array: number[]): void {
     for (let i = array.length - 1; i > 0; i--) {
       let j = Math.floor(Math.random() * (i + 1));
       [array[i], array[j]] = [array[j], array[i]];
@@ -133,6 +135,7 @@ export class Game {
 
   incrementScore() {
     this.score++;
+    if (this.score >= 50) this.endGame();
     this.updateSpeed();
     if (this.scoreElement)
       this.scoreElement.textContent = `Score: ${this.score}`;

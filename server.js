@@ -11,5 +11,5 @@ app.use(express.static(path.join(__dirname, "public")));
 // Start the server
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}/`);
-  // open(`http://localhost:${port}/`);
+  open(`lettertetris-production.up.railway.app${port}/`);
 });
