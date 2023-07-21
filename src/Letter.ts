@@ -1,6 +1,7 @@
-import * as PIXI from "pixi.js";
-import { Game } from "./index";
-import { hslToHex } from "./hslToHex";
+import * as PIXI from 'pixi.js';
+import { Color } from 'pixi.js';
+import { Game } from './index';
+// import { hslToHex } from './hslToHex';
 
 export class Letter {
   public letter: string;
@@ -19,9 +20,8 @@ export class Letter {
 
     this.square = new PIXI.Graphics();
 
-    const hue = Math.random();
-    const color = hslToHex(hue, 1, 0.2);
-
+    const hue = Math.random() * 360;
+    const color = new Color(`hsl(${hue}, 100%, 20%, 100%)`).toArray();
     this.square.beginFill(color);
     this.square.lineStyle(1, 0xffffff);
     this.square.drawRect(0, 0, this.squareSize, this.squareSize);
@@ -30,10 +30,10 @@ export class Letter {
     game.app.stage.addChild(this.square);
 
     this.letterSprite = new PIXI.Text(letter, {
-      fontFamily: "Arial",
+      fontFamily: 'Arial',
       fontSize: this.letterSize,
       fill: 0xffffff,
-      align: "center",
+      align: 'center',
     });
 
     this.letterSprite.anchor.set(0.5);
