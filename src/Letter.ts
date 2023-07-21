@@ -15,7 +15,7 @@ export class Letter {
     this.squareSize = size;
     this.letterSize = Math.max(
       this.squareSize * (Math.random() * 0.7 + 0.1),
-      25
+      15
     );
 
     this.square = new PIXI.Graphics();
